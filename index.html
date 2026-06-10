@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>32-0 · Superliga-udgaven</title>
+<meta name="description" content="Spin en dansk klub og et årti, byg dit drømmehold og se om det kan gå 32-0 i Superligaen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#18532F; --green-dark:#0C3A1F; --chalk:#F3EFE2; --paper:#FBF9F2;
+  --ink:#16211A; --muted:#6B7468; --line:#D9D4C3;
+  --win:#1F7A3D; --draw:#D9A441; --loss:#B5402F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Archivo',sans-serif;font-variation-settings:'wdth' 75;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+header{border-bottom:3px solid var(--ink);padding:8px 0 16px;margin-bottom:20px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-weight:900;font-size:clamp(44px,9vw,64px);letter-spacing:-0.02em;line-height:0.9}
+.logo span{color:var(--green)}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;text-align:right}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.progress{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em}
+.iqlab{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:18px}
+.spinhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.club{font-weight:800;font-size:26px;line-height:1.1}
+.era{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);margin-top:2px}
+button{font-family:'Archivo',sans-serif;font-variation-settings:'wdth' 75;font-size:14px;font-weight:600;border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer;transition:background .12s, transform .06s}
+button:hover:not(:disabled){background:var(--chalk)}
+button:active:not(:disabled){transform:scale(0.98)}
+button:disabled{opacity:0.4;cursor:not-allowed}
+button.primary{background:var(--green);border-color:var(--green);color:#fff}
+button.primary:hover:not(:disabled){background:var(--green-dark)}
+.pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:16px}
+.pcard{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-weight:500}
+.pcard:hover:not(:disabled){background:var(--chalk);border-color:var(--ink)}
+.pname{font-size:15px;font-weight:700}
+.pmeta{display:flex;align-items:center;gap:8px}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.06em;padding:2px 8px;border-radius:99px;color:#fff}
+.b-GK{background:#5B4A9E}.b-DF{background:#1D6E54}.b-MF{background:#A14B22}.b-FW{background:#A03056}
+.rating{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)}
+.pitch{background:var(--green);border-radius:12px;padding:26px 12px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px;border:1px solid var(--green-dark)}
+.pitch::before{content:"";position:absolute;inset:10px;border:2px solid rgba(243,239,226,0.45);border-radius:6px;pointer-events:none}
+.pitch::after{content:"";position:absolute;left:50%;top:50%;width:120px;height:120px;border:2px solid rgba(243,239,226,0.35);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
+.slot{flex:0 1 140px;min-width:108px;background:var(--chalk);border-radius:7px;padding:7px 9px;font-size:12.5px;text-align:center;border:1px solid rgba(12,58,31,0.25)}
+.slot .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4C5A4E;margin-top:1px}
+.slot.empty{background:transparent;border:1.5px dashed rgba(243,239,226,0.55);color:rgba(243,239,226,0.8);font-weight:600;padding:13px 9px}
+.slot.empty.target{border-style:solid;border-color:var(--chalk);background:rgba(243,239,226,0.22);color:#fff;font-weight:700;cursor:pointer}
+.slot.empty.target:hover{background:rgba(243,239,226,0.38)}
+.pcard.sel{border-color:var(--ink);background:var(--chalk)}
+.simwrap{margin-top:18px}
+.kupon{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;position:relative}
+.kupon::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:repeating-linear-gradient(90deg,var(--green) 0 14px,transparent 14px 22px);border-radius:10px 10px 0 0}
+.kuponlab{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:6px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#fff}
+.cv{background:var(--win)}.cu{background:var(--draw)}.ct{background:var(--loss)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}
+.metric{background:var(--chalk);border-radius:8px;padding:14px 16px}
+.metric .lab{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+.metric .val{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;margin-top:2px}
+.verdict{font-size:17px;font-weight:600;margin-bottom:16px}
+details{margin-bottom:18px}
+summary{font-size:13px;color:var(--muted);cursor:pointer}
+.xirow{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.xirow .r{font-family:'IBM Plex Mono',monospace;color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+footer{margin-top:36px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">32<span>-0</span></div>
+  <div class="tag">Superliga-udgaven<br>11 spillere · 32 kampe · 0 nederlag</div>
+</header>
+
+<div class="bar">
+  <div class="progress" id="progress">Runde 1/11</div>
+  <label class="iqlab"><input type="checkbox" id="iq"> Fodbold-IQ (skjul ratings)</label>
+</div>
+
+<div class="card" id="formbox">
+  <div style="font-weight:800;font-size:18px;margin-bottom:2px;">Vælg startopstilling</div>
+  <div class="era" style="margin-bottom:4px;">Formationen bestemmer, hvor mange forsvarere, midtbanespillere og angribere du skal drafte.</div>
+  <div class="pool" id="formgrid"></div>
+</div>
+
+<div class="card" id="spinbox" style="display:none">
+  <div class="spinhead">
+    <div>
+      <div class="club" id="club">&nbsp;</div>
+      <div class="era" id="era">&nbsp;</div>
+    </div>
+    <button id="respin" onclick="doRespin()">Spin igen (2 tilbage)</button>
+  </div>
+  <div class="pool" id="pool"></div>
+  <div class="era" id="hint" style="margin-top:10px;"></div>
+</div>
+
+<div class="pitch" id="pitch"></div>
+
+<div class="simwrap" id="simwrap"></div>
+<div id="results"></div>
+
+<footer>32-0 · Superliga-udgaven — spin en klub og et årti, byg dit hold, og se om det kan gå igennem grundspil og mesterskabsspil uden nederlag. Ratings er skøn, ikke videnskab.</footer>
+</div>
+
+<script>
+const BASE=[
+{c:"Brøndby IF",e:"1990'erne",ps:[["Mogens Krogh","GK",81],["Marc Rieper","DF",85],["Søren Colding","DF",79],["Dan Eggen","DF",77],["Ole Bjur","DF",74],["Kim Vilfort","MF",86],["John 'Faxe' Jensen","MF",83],["Kim Daugaard","MF",77],["Aurelijus Skarbalius","MF",73],["Ebbe Sand","FW",88],["Peter Møller","FW",83],["Ruben Bagger","FW",76]]},
+{c:"Brøndby IF",e:"2000'erne",ps:[["Karim Zaza","GK",79],["Daniel Agger","DF",89],["Per Nielsen","DF",82],["Mads Jørgensen","DF",73],["Thomas Kahlenberg","MF",85],["Morten Wieghorst","MF",83],["Mike Jensen","MF",76],["Samuel Holmén","MF",76],["Martin Retov","MF",74],["Johan Elmander","FW",84],["Morten 'Duncan' Rasmussen","FW",82],["Ousman Jallow","FW",72]]},
+{c:"Brøndby IF",e:"2010'erne",ps:[["Frederik Rønnow","GK",83],["Lukas Hradecky","GK",83],["Johan Larsson","DF",80],["Riza Durmisi","DF",78],["Benedikt Röcker","DF",77],["Frederik Holst","DF",72],["Hany Mukhtar","MF",84],["Christian Nørgaard","MF",83],["Andrew Hjulsager","MF",74],["Kamil Wilczek","FW",84],["Teemu Pukki","FW",81],["Alexander Szymanowski","FW",76],["Simon Makienok","FW",74]]},
+{c:"Brøndby IF",e:"2020'erne",ps:[["Mads Hermansen","GK",83],["Andreas Maxsø","DF",79],["Rasmus Lauritsen","DF",78],["Sigurd Rosted","DF",76],["Blas Riveros","DF",71],["Daniel Wass","MF",81],["Josip Radošević","MF",80],["Morten Frendrup","MF",78],["Anis Ben Slimane","MF",73],["Mathias Kvistgaarden","FW",83],["Nicolai Vallys","FW",80],["Simon Hedlund","FW",75],["Marko Divković","FW",71]]},
+{c:"FC København",e:"2000'erne",ps:[["Jesper Christiansen","GK",82],["Brede Hangeland","DF",87],["Oscar Wendt","DF",80],["Michael Gravgaard","DF",78],["Lars Jacobsen","DF",77],["William Kvist","MF",83],["Tobias Linderoth","MF",83],["Libor Sionko","MF",76],["Hjalte Nørregaard","MF",74],["Dame N'Doye","FW",87],["Jesper Grønkjær","FW",84],["César Santin","FW",77],["Morten Nordstrand","FW",75]]},
+{c:"FC København",e:"2010'erne",ps:[["Robin Olsen","GK",82],["Stephan Andersen","GK",81],["Mathias 'Zanka' Jørgensen","DF",82],["Ludwig Augustinsson","DF",82],["Erik Johansson","DF",76],["Peter Ankersen","DF",75],["Thomas Delaney","MF",85],["Atiba Hutchinson","MF",83],["Rasmus Falk","MF",82],["Carlos Zeca","MF",79],["Nicolai Jørgensen","FW",84],["Andreas Cornelius","FW",81],["Federico Santander","FW",77],["Pieros Sotiriou","FW",74]]},
+{c:"FC København",e:"2020'erne",ps:[["Kamil Grabara","GK",85],["Denis Vavro","DF",81],["Kevin Diks","DF",78],["Elias Jelert","DF",78],["Victor Kristiansen","DF",76],["Viktor Claesson","MF",84],["Lukas Lerager","MF",80],["Hákon Arnar Haraldsson","MF",78],["Mohamed Elyounoussi","FW",83],["Roony Bardghji","FW",82],["Rasmus Højlund","FW",80],["Diogo Gonçalves","FW",74]]},
+{c:"FC Midtjylland",e:"2000'erne",ps:[["Arek Onyszko","GK",78],["Simon Kjær","DF",82],["Winston Reid","DF",79],["Kristian Bach Bak","DF",74],["Mikkel Thygesen","MF",78],["Jonas Borring","MF",77],["Christian Sivebæk","MF",72],["Frank Kristensen","FW",81],["Mohammed Zidan","FW",82],["Razak Pimpong","FW",73]]},
+{c:"FC Midtjylland",e:"2010'erne",ps:[["Jonas Lössl","GK",82],["Erik Sviatchenko","DF",82],["Kian Hansen","DF",78],["Filip Novák","DF",77],["Patrick Banggaard","DF",72],["Jakob Poulsen","MF",83],["Tim Sparv","MF",82],["Rafael van der Vaart","MF",76],["Rilwan Hassan","MF",72],["André Rømer","MF",71],["Pione Sisto","FW",84],["Paul Onuachu","FW",82],["Martin Pušić","FW",77]]},
+{c:"FC Midtjylland",e:"2020'erne",ps:[["Elías Rafn Ólafsson","GK",77],["Juninho","DF",79],["Henrik Dalsgaard","DF",78],["Joel Andersson","DF",76],["Evander","MF",85],["Oliver Sørensen","MF",78],["Kristoffer Olsson","MF",77],["Aral Şimşir","MF",73],["Franculino","FW",85],["Anders Dreyer","FW",83],["Gustav Isaksen","FW",82],["Edward Chilufya","FW",71]]},
+{c:"AGF",e:"2010'erne",ps:[["Steffen Rasmussen","GK",78],["Aleksandar Jovanović","GK",77],["Niklas Backman","DF",75],["Alexander Juel Andersen","DF",72],["Martin Jørgensen","MF",82],["Jens Stage","MF",79],["Jens Jønsson","MF",75],["Elmar Bjarnason","MF",71],["Mustapha Bundu","FW",80],["Kasper Junker","FW",77],["Tobias Sana","FW",74]]},
+{c:"AGF",e:"2020'erne",ps:[["Jesper Hansen","GK",78],["William Eskelinen","GK",74],["Yann Bisseck","DF",84],["Frederik Tingager","DF",77],["Eric Kahl","DF",74],["Mikael Anderson","MF",77],["Nicolai Poulsen","MF",74],["Patrick Mortensen","FW",79],["Gift Links","FW",77]]},
+{c:"FC Nordsjælland",e:"2010'erne",ps:[["Rúnar Alex Rúnarsson","GK",76],["David Jensen","GK",75],["Jores Okore","DF",79],["Victor Nelsson","DF",78],["Patrick Mtiliga","DF",77],["Karlo Bartolec","DF",74],["Emiliano Marcondes","MF",81],["Mathias Jensen","MF",80],["Mohammed Kudus","FW",85],["Andreas Skov Olsen","FW",82],["Marcus Ingvartsen","FW",78],["Uffe Bech","FW",73]]},
+{c:"FC Nordsjælland",e:"2020'erne",ps:[["Peter Vindahl Jensen","GK",76],["Daniel Svensson","DF",78],["Adamo Nagalo","DF",76],["Martin Frese","DF",75],["Andreas Schjelderup","MF",81],["Benjamin Nygren","MF",77],["Magnus Kofod Andersen","MF",73],["Kamaldeen Sulemana","FW",84],["Ernest Nuamah","FW",82],["Conrad Harder","FW",78],["Ibrahim Osman","FW",77],["Oliver Antman","FW",76]]},
+{c:"OB",e:"1990'erne",ps:[["Lars Høgh","GK",84],["Michael Schjønberg","DF",80],["Steen Nedergaard","DF",77],["Allan Nielsen","MF",83],["Brian Steen Nielsen","MF",80],["Carsten Hemmingsen","MF",72],["Lars Elstrup","FW",82],["Mwape Miti","FW",78],["Per Pedersen","FW",76],["Jess Thorup","FW",73]]},
+{c:"AaB",e:"2000'erne",ps:[["Jimmy Nielsen","GK",81],["Michael Jakobsen","DF",76],["Kenneth Emil Petersen","DF",76],["Patrick Kristensen","DF",72],["Thomas Augustinussen","MF",78],["Rasmus Würtz","MF",77],["Kasper Risgård","MF",74],["Anders Due","MF",72],["Rade Prica","FW",80],["Jeppe Curth","FW",75]]},
+{c:"AaB",e:"2010'erne",ps:[["Jacob Rinne","GK",76],["Rasmus Thelander","DF",76],["Kasper Pedersen","DF",74],["Jakob Blåbjerg","DF",71],["Lucas Andersen","MF",81],["Kasper Kusk","MF",78],["Frederik Børsting","MF",72],["Lukas Spalvis","FW",78],["Tom van Weert","FW",77],["Edison Flores","FW",74]]},
+{c:"Silkeborg IF",e:"1990'erne",ps:[["Jacob Laursen","DF",82],["Keld Bordinggaard","MF",71],["Søren Frederiksen","FW",81],["Heine Fernandez","FW",80]]},
+{c:"Silkeborg IF",e:"2020'erne",ps:[["Nicolai Larsen","GK",77],["Oliver Sonne","DF",78],["Lukas Engel","DF",77],["Mark Brink","MF",77],["Stefán Thordarson","MF",77],["Pelle Mattsson","MF",74],["Anders Klynge","MF",73],["Nicklas Helenius","FW",78],["Alexander Lind","FW",78],["Tonni Adamsen","FW",75]]}
+];
+const FORMS={"4-3-3":[4,3,3],"4-4-2":[4,4,2],"3-4-3":[3,4,3],"3-5-2":[3,5,2],"5-3-2":[5,3,2],"5-4-1":[5,4,1]};
+let formation="4-3-3";
+let LINES={FW:{n:3,l:"Angreb",b:"ANG"},MF:{n:3,l:"Midtbane",b:"MID"},DF:{n:4,l:"Forsvar",b:"FOR"},GK:{n:1,l:"Målmand",b:"MÅL"}};
+const OPP=["FC København","FC Midtjylland","Brøndby IF","AGF","FC Nordsjælland","Randers FC","Silkeborg IF","Viborg FF","AaB","OB","Vejle BK"];
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let pools,team,spinsLeft,offered,cur,locked,spinning,selected=null,lastRes=null;
+function setHint(t){const h=document.getElementById('hint');if(h)h.textContent=t;}
+
+function reset(){
+  pools=BASE.map(p=>({c:p.c,e:p.e,ps:p.ps.map(x=>x.slice())}));
+  team=null;selected=null;locked=false;lastRes=null;
+  document.getElementById('iq').disabled=false;
+  document.getElementById('results').innerHTML='';
+  document.getElementById('simwrap').innerHTML='';
+  document.getElementById('spinbox').style.display='none';
+  document.getElementById('pitch').style.display='none';
+  document.getElementById('formbox').style.display='block';
+  document.getElementById('progress').textContent='Vælg startopstilling';
+  renderForms();
+}
+function renderForms(){
+  const g=document.getElementById('formgrid');g.innerHTML='';
+  for(const k in FORMS){
+    const f=FORMS[k];
+    const b=document.createElement('button');b.className='pcard';
+    b.innerHTML='<span class="pname">'+k+'</span><span class="rating">'+f[0]+' forsvar · '+f[1]+' midtbane · '+f[2]+' angreb</span>';
+    b.onclick=()=>chooseForm(k);g.appendChild(b);
+  }
+}
+function chooseForm(k){
+  formation=k;const f=FORMS[k];
+  LINES.DF.n=f[0];LINES.MF.n=f[1];LINES.FW.n=f[2];
+  team={GK:[null],DF:Array(f[0]).fill(null),MF:Array(f[1]).fill(null),FW:Array(f[2]).fill(null)};
+  document.getElementById('formbox').style.display='none';
+  document.getElementById('spinbox').style.display='block';
+  document.getElementById('pitch').style.display='flex';
+  renderPitch();newRound();
+}
+function picked(){return ['GK','DF','MF','FW'].reduce((s,k)=>s+team[k].filter(Boolean).length,0);}
+function iqOn(){return document.getElementById('iq').checked;}
+function pickable(pl){return team[pl[1]].some(x=>!x);}
+function eligible(excl){
+  let ix=pools.map((p,i)=>i).filter(i=>!excl.includes(i)&&pools[i].ps.some(pickable));
+  if(!ix.length)ix=pools.map((p,i)=>i).filter(i=>pools[i].ps.some(pickable));
+  return ix;
+}
+function newRound(){spinsLeft=3;offered=[];spin();}
+function spin(){
+  spinsLeft--;
+  selected=null;setHint('');
+  const ix=eligible(offered);
+  cur=ix[Math.floor(Math.random()*ix.length)];
+  offered.push(cur);
+  document.getElementById('progress').textContent='Runde '+(picked()+1)+'/11 · Spin '+(3-spinsLeft)+'/3';
+  const rb=document.getElementById('respin');
+  rb.textContent='Spin igen ('+spinsLeft+' tilbage)';rb.disabled=spinsLeft<1;
+  document.getElementById('pool').innerHTML='';
+  if(reduceMotion){spinning=false;settle();return;}
+  spinning=true;let t=0;
+  const iv=setInterval(()=>{
+    const r=pools[Math.floor(Math.random()*pools.length)];
+    document.getElementById('club').textContent=r.c;
+    document.getElementById('era').textContent=r.e;
+    t+=70;if(t>=560){clearInterval(iv);spinning=false;settle();}
+  },70);
+}
+function settle(){
+  const p=pools[cur];
+  document.getElementById('club').textContent=p.c;
+  document.getElementById('era').textContent=p.e;
+  const box=document.getElementById('pool');box.innerHTML='';
+  p.ps.forEach((pl,i)=>{
+    const b=document.createElement('button');b.className='pcard';b.disabled=!pickable(pl);
+    b.innerHTML='<span class="pname">'+pl[0]+'</span>'+
+      '<span class="pmeta"><span class="badge b-'+pl[1]+'">'+LINES[pl[1]].b+'</span>'+
+      '<span class="rating">'+(iqOn()?'Rating skjult':'Rating '+pl[2])+'</span></span>';
+    b.onclick=()=>select(i,b);box.appendChild(b);
+  });
+}
+function select(i,btn){
+  if(spinning||locked)return;
+  const pl=pools[cur].ps[i];
+  if(!pickable(pl))return;
+  selected={i:i,pl:pl};
+  document.querySelectorAll('#pool .pcard').forEach(x=>x.classList.remove('sel'));
+  btn.classList.add('sel');
+  setHint('Tryk på en ledig plads på banen for at sætte '+pl[0]+' ind ('+LINES[pl[1]].l.toLowerCase()+').');
+  renderPitch();
+}
+function place(k,idx){
+  if(!selected||spinning||locked)return;
+  const pl=selected.pl;
+  if(pl[1]!==k||team[k][idx])return;
+  document.getElementById('iq').disabled=true;
+  team[k][idx]=pl;
+  pools[cur].ps.splice(selected.i,1);
+  selected=null;setHint('');
+  renderPitch();
+  if(picked()>=11){endDraft();}else{newRound();}
+}
+function doRespin(){if(spinsLeft<1||spinning||locked)return;spin();}
+function renderPitch(){
+  const pitch=document.getElementById('pitch');pitch.innerHTML='';
+  for(const k of ['FW','MF','DF','GK']){
+    const row=document.createElement('div');row.className='row';
+    for(let i=0;i<LINES[k].n;i++){
+      const d=document.createElement('div');
+      if(team[k][i]){
+        d.className='slot';
+        d.innerHTML='<div class="nm">'+team[k][i][0]+'</div>'+
+        '<div class="sub">'+(iqOn()?LINES[k].b:LINES[k].b+' · '+team[k][i][2])+'</div>';
+      }else{
+        d.className='slot empty';
+        if(selected&&selected.pl[1]===k){
+          d.classList.add('target');d.textContent='Sæt her';
+          d.onclick=()=>place(k,i);
+        }else{d.textContent=LINES[k].l;}
+      }
+      row.appendChild(d);
+    }
+    pitch.appendChild(row);
+  }
+}
+function endDraft(){
+  document.getElementById('spinbox').style.display='none';
+  document.getElementById('progress').textContent='Holdet er klar ('+formation+')';
+  const w=document.getElementById('simwrap');
+  w.innerHTML='';
+  const b=document.createElement('button');b.className='primary';
+  b.textContent='Simulér sæsonen (32 kampe)';
+  b.onclick=()=>{b.remove();simulate();};
+  w.appendChild(b);
+}
+function avg(a){return a.reduce((s,p)=>s+p[2],0)/a.length;}
+function simulate(){
+  locked=true;
+  const R=0.12*avg(team.GK)+0.30*avg(team.DF)+0.28*avg(team.MF)+0.30*avg(team.FW);
+  const base=Math.min(0.95,1/(1+Math.exp(-(R-78)/2.4)));
+  const opps=[];for(let r=0;r<2;r++)for(const o of OPP)opps.push(o);
+  for(let r=0;r<2;r++)for(let i=0;i<5;i++)opps.push(OPP[i]);
+  const res=[];let wn=0,dr=0,ls=0;
+  for(let m=0;m<32;m++){
+    let pw=base+(Math.random()*0.08-0.04)-(m>=22?0.06:0);
+    pw=Math.max(0.05,Math.min(0.95,pw));
+    const x=Math.random();
+    if(x<pw){res.push('V');wn++;}else if(x<pw+(1-pw)*0.45){res.push('U');dr++;}else{res.push('T');ls++;}
+  }
+  lastRes={res,wn,dr,ls,R};
+  const w=document.getElementById('simwrap');
+  w.innerHTML='<div class="kupon"><div class="kuponlab">Sæsonkupon · grundspil (1–22) og mesterskabsspil (23–32)</div><div class="chips" id="chips"></div></div>';
+  const chips=document.getElementById('chips');let i=0;
+  const step=()=>{
+    if(i>=32){verdict();return;}
+    const c=document.createElement('div');
+    c.className='chip '+(res[i]==='V'?'cv':res[i]==='U'?'cu':'ct');
+    c.textContent=res[i];c.title='Kamp '+(i+1)+' mod '+opps[i];
+    chips.appendChild(c);i++;
+    setTimeout(step,reduceMotion?0:90);
+  };
+  step();
+}
+function verdict(){
+  const {wn,dr,ls,R}=lastRes;
+  const pts=wn*3+dr;let t;
+  if(wn===32)t='PERFEKT SÆSON! 32-0-0 — det er aldrig sket i Superligaens historie.';
+  else if(pts>=80)t='Suverænt dansk mesterskab. Guldet var sikret længe før sidste runde.';
+  else if(pts>=68)t='Dansk mester efter en tæt guldkamp.';
+  else if(pts>=58)t='Medaljer og europæisk fodbold — men guldet glippede.';
+  else if(pts>=48)t='Solid top-6 og mesterskabsspil. Hæderligt, ikke historisk.';
+  else if(pts>=36)t='Midterfelt. Sæsonen sluttede i nedrykningsspillet, men uden drama.';
+  else t='Nervekrig i bunden. Det her hold skal ud i nedrykningsspil — og taber det.';
+  const grades=[];let mvp=null;
+  for(const k of ['GK','DF','MF','FW'])for(const p of team[k]){
+    let g=5+(p[2]-71)*0.18+(pts-55)/40+(Math.random()*1.4-0.7);
+    g=Math.round(Math.max(1,Math.min(10,g))*10)/10;
+    const o={n:p[0],b:LINES[k].b,r:p[2],g:g};grades.push(o);
+    if(!mvp||g>mvp.g)mvp=o;
+  }
+  lastRes.mvp=mvp;
+  const fmt=x=>x.toFixed(1).replace('.',',');
+  const r=document.getElementById('results');
+  let xi='';
+  for(const o of grades)
+    xi+='<div class="xirow"><span>'+o.n+(o===mvp?' ★':'')+'</span><span class="r">'+o.b+' · rating '+o.r+' · <strong style="color:var(--ink)">'+fmt(o.g)+'</strong></span></div>';
+  r.innerHTML='<div class="metrics">'+
+  '<div class="metric"><div class="lab">Sæsonfacit</div><div class="val">'+wn+'-'+dr+'-'+ls+'</div></div>'+
+  '<div class="metric"><div class="lab">Point (maks. 96)</div><div class="val">'+pts+'</div></div>'+
+  '<div class="metric"><div class="lab">Holdrating</div><div class="val">'+R.toFixed(1)+'</div></div>'+
+  '</div><div class="verdict">'+t+'</div>'+
+  '<div class="kupon" style="margin-bottom:18px;"><div class="kuponlab">Sæsonens karakterer (1–10) · sæsonens spiller: '+mvp.n+' '+fmt(mvp.g)+'</div>'+xi+'</div>'+
+  '<div class="actions"><button id="copybtn" class="primary">Kopiér resultat</button><button id="againbtn">Spil igen</button></div>';
+  document.getElementById('againbtn').onclick=reset;
+  document.getElementById('copybtn').onclick=copyResult;
+}
+function copyResult(){
+  const {res,wn,dr,ls}=lastRes;
+  const pts=wn*3+dr;
+  const emo=res.map(x=>x==='V'?'🟩':x==='U'?'🟨':'🟥').join('');
+  const mvp=lastRes.mvp;
+  const txt='32-0 · Superliga-udgaven ('+formation+')\n'+wn+'-'+dr+'-'+ls+' · '+pts+' point\nSæsonens spiller: '+mvp.n+' ('+mvp.g.toFixed(1).replace('.',',')+')\n'+emo.slice(0,44)+'\n'+emo.slice(44);
+  const done=()=>{
+    const b=document.getElementById('copybtn');
+    b.textContent='Kopieret!';
+    setTimeout(()=>{b.textContent='Kopiér resultat';},1600);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));
+  }else{fallbackCopy(txt,done);}
+}
+function fallbackCopy(txt,done){
+  const ta=document.createElement('textarea');
+  ta.value=txt;document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');done();}catch(e){}
+  document.body.removeChild(ta);
+}
+reset();
+</script>
+</body>
+</html>
